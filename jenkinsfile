@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: '*', url: 'https://github.com/PrabaSeenu/DevOps_webApp_host.git'
+                git branch: 'main', url: 'https://github.com/PrabaSeenu/DevOps_webApp_host.git'
             }
         }
         stage("Sonarqube Analysis "){
