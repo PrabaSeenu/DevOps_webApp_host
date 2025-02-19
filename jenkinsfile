@@ -8,7 +8,6 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        NVD_API_KEY = credentials('nvd-api-key')
     }
 
     stages {
@@ -52,7 +51,10 @@ pipeline {
 
         stage('OWASP FS Scan') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=$NVD_API_KEY", odcInstallation: 'DP-Check'
+                withEnv(["NVD_API_KEY=${credentials('nvd-api-key')}"]) {  
+                    sh "dependency-check.sh --updateOnly --nvdApiKey=$NVD_API_KEY --data /var/lib/dependency-check" // ✅ Pre-downloads NVD data
+                    sh "dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=$NVD_API_KEY --data /var/lib/dependency-check --apiDelay 5000 --cveValidForHours 48"
+                }
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
