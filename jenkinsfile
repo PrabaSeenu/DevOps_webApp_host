@@ -57,7 +57,6 @@ pipeline {
                         --disableYarnAudit 
                         --disableNodeAudit 
                         --nvdApiKey=$NVD_API_KEY 
-                        --apiDelay 5000 
                         --cveValidForHours 48 
                         --data /var/lib/dependency-check
                     ''', odcInstallation: 'DP-Check'
