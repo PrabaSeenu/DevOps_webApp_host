@@ -52,8 +52,7 @@ pipeline {
         stage('OWASP FS Scan') {
             steps {
                 withEnv(["NVD_API_KEY=${credentials('nvd-api-key')}"]) {  
-                    sh "dependency-check.sh --updateOnly --nvdApiKey=$NVD_API_KEY --data /var/lib/dependency-check" // ✅ Pre-downloads NVD data
-                    sh "dependency-check.sh --scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=$NVD_API_KEY --data /var/lib/dependency-check --apiDelay 5000 --cveValidForHours 48"
+                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=$NVD_API_KEY --apiDelay 5000 --cveValidForHours 48 --data /var/lib/dependency-check", odcInstallation: 'DP-Check'
                 }
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
