@@ -57,14 +57,13 @@ pipeline {
                         --disableYarnAudit 
                         --disableNodeAudit 
                         --nvdApiKey=$NVD_API_KEY 
-                        --cveValidForHours 48 
                         --data /var/lib/dependency-check 
-                        --nvdApiDelay 6000 
                         --nvdMaxRetries 10 
-                        --nvdPageSize 1000
+                        --format ALL 
+                        --out dependency-check-reports
                     ''', odcInstallation: 'DP-Check'
                 }
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheckPublisher pattern: 'dependency-check-reports/dependency-check-report.xml'
             }
         }
 
