@@ -51,19 +51,18 @@ pipeline {
 
         stage('OWASP FS Scan') {
             steps {
-                withEnv(["NVD_API_KEY=${credentials('nvd-api-key')}"]) {  
+                withEnv(["NVD_API_KEY=${credentials('nvd-api-key')}"]) {
                     dependencyCheck additionalArguments: '''
                         --scan ./ 
                         --disableYarnAudit 
                         --disableNodeAudit 
                         --nvdApiKey=$NVD_API_KEY 
                         --data /var/lib/dependency-check 
-                        --nvdMaxRetries 10 
                         --format ALL 
                         --out dependency-check-reports
                     ''', odcInstallation: 'DP-Check'
                 }
-                dependencyCheckPublisher pattern: 'dependency-check-reports/dependency-check-report.xml'
+                dependencyCheckPublisher pattern: '**/dependency-check-reports/dependency-check-report.xml'
             }
         }
 
@@ -76,7 +75,7 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {   
+                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
                         sh 'docker build -t webapp .'
                         sh 'docker tag webapp prabaseenu/webapp:latest'
                         sh 'docker push prabaseenu/webapp:latest'
