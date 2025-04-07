@@ -52,7 +52,12 @@ pipeline {
 
         stage('OWASP FS Scan') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=$NVD_API_KEY", odcInstallation: 'DP-Check'
+                sh '''
+                    dependency-check.sh --project webapp --scan . \
+                    --disableYarnAudit --disableNodeAudit \
+                    --nvdApiKey=$NVD_API_KEY \
+                    --format XML --out .
+                '''
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -66,7 +71,7 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {   
+                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
                         sh 'docker build -t webapp .'
                         sh 'docker tag webapp prabaseenu/webapp:latest'
                         sh 'docker push prabaseenu/webapp:latest'
@@ -83,7 +88,10 @@ pipeline {
 
         stage('Deploy to Container') {
             steps {
-                sh 'docker run -d --name webapp -p 3000:3000 prabaseenu/webapp:latest'
+                sh '''
+                docker rm -f webapp || true
+                docker run -d --name webapp -p 80:3000 prabaseenu/webapp:latest
+                '''
             }
         }
     }
