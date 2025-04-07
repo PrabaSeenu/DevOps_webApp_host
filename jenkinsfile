@@ -88,10 +88,7 @@ pipeline {
 
         stage('Deploy to Container') {
             steps {
-                sh '''
-                docker rm -f webapp || true
-                docker run -d --name webapp -p 80:3000 prabaseenu/webapp:latest
-                '''
+                sh 'docker run -d --name webapp -p 3000:3000 prabaseenu/webapp:latest'
             }
         }
     }
